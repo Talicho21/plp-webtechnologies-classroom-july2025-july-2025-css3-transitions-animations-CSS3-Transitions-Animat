@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Alchemist's Compendium</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Configure Tailwind to use Inter font and apply a dark mode aesthetic -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a1a2e; /* Deep dark blue/purple background */
+        }
+        /* Custom scrollbar for a themed look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #2c2c4b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #5a189a;
+            border-radius: 10px;
+        }
+        .compendium-card {
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            /* Part 1: Apply CSS Keyframe Animation to the card */
+            animation: shimmer-glow 8s infinite alternate ease-in-out;
+        }
+
+        /* Keyframes for a subtle, perpetual glow effect on the card */
+        @keyframes shimmer-glow {
+            0% { border: 2px solid rgba(139, 92, 246, 0.2); } /* purple-400 */
+            100% { border: 2px solid rgba(139, 92, 246, 0.6); }
+        }
+
+        /* Enhanced Button Transitions (Part 1) */
+        .tab-button {
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .tab-button:hover {
+            transform: scale(1.03);
+        }
+
+        /* Keyframes for a dramatic alert slide-in (Part 3) */
+        @keyframes slide-in-alert {
+            0% { transform: translateY(-50px); opacity: 0; }
+            10% { transform: translateY(0); opacity: 1; }
+            90% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-50px); opacity: 0; }
+        }
+
+        /* Class to trigger the animation (Part 3) */
+        .animate-alert {
+            animation: slide-in-alert 3s forwards; /* 3 seconds duration, retains end state */
+            pointer-events: none; /* Allows clicks underneath while visible */
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 sm:p-8 flex items-center justify-center">
+
+    <div class="compendium-card bg-[#2c2c4b] w-full max-w-4xl rounded-xl p-6 md:p-10 text-gray-100 border-4 border-purple-700/20 relative">
+
+        <!-- Alchemy Alert (Hidden by default, shown by JS/CSS animation) -->
+        <div id="alchemy-alert" class="absolute top-0 left-1/2 -translate-x-1/2 transform transition duration-300 w-full max-w-sm p-4 rounded-b-lg text-center font-semibold text-yellow-100 bg-red-700 z-50 opacity-0">
+            WARNING: Unstable Reagents Detected!
+        </div>
+
+        <h1 class="text-4xl font-bold text-center mb-6 text-purple-400 border-b-2 border-purple-700 pb-3">
+            The Alchemist's Compendium
+        </h1>
+        <p class="text-center text-gray-400 mb-8">
+            Catalogue of the most potent brews, mysterious ingredients, and ancient incantations.
+        </p>
+
+        <!-- Tab Navigation -->
+        <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 mb-6 justify-center">
+            
+            <button id="tab-potions" data-target="panel-potions" 
+                    class="tab-button flex-1 py-3 px-6 rounded-lg text-lg font-medium hover:bg-purple-700/70 hover:text-white bg-purple-700 text-white">
+                Potions & Elixirs
+            </button>
+            
+            <button id="tab-ingredients" data-target="panel-ingredients" 
+                    class="tab-button flex-1 py-3 px-6 rounded-lg text-lg font-medium hover:bg-purple-700/70 text-purple-400 border border-purple-700/50">
+                Rare Ingredients
+            </button>
+            
+            <button id="tab-spells" data-target="panel-spells" 
+                    class="tab-button flex-1 py-3 px-6 rounded-lg text-lg font-medium hover:bg-purple-700/70 text-purple-400 border border-purple-700/50">
+                Ancient Incantations
+            </button>
+
+        </div>
+
+        <!-- Tab Content Panels -->
+        <div class="tab-content border border-purple-900 rounded-lg p-6 bg-[#1a1a2e] min-h-[350px]">
+
+            <!-- Panel 1: Potions & Elixirs -->
+            <div id="panel-potions" class="tab-panel">
+                <h2 class="text-3xl font-semibold mb-4 text-emerald-400">The Brewmaster's Secrets</h2>
+                <div class="space-y-4">
+                    <p>
+                        **Vial of Restoration (Greater):** Instantly heals all wounds and restores mental clarity. Requires Phoenix Feather and Blessed Water. <span class="text-xs text-gray-500">(Formula: P-001A)</span>
+                    </p>
+                    <p>
+                        **Elixir of Shadows:** Grants temporary invisibility in darkness. Side effects include a slight fear of open flames. Requires Nightshade Bloom and Dragon's Breath condensate. <span class="text-xs text-gray-500">(Formula: P-008B)</span>
+                    </p>
+                    
+                    <!-- Part 2: Demonstrate Functionality and Return Values -->
+                    <div class="mt-6 pt-4 border-t border-purple-800">
+                        <h3 class="text-xl font-medium text-gray-300 mb-3">Dose Calculation Utility</h3>
+                        <div class="flex items-center space-x-3">
+                            <button id="calculate-dose-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white py-2 px-4 rounded-lg transition-colors duration-200">
+                                Calculate Max Potency Dose
+                            </button>
+                            <span id="dose-result" class="text-lg font-bold text-yellow-400">0 units</span>
+                        </div>
+                    </div>
+
+                    <p class="mt-4 p-3 bg-purple-700/30 rounded-lg text-sm italic border-l-4 border-purple-500">
+                        *Note: Consumption of more than two Greater Restoration Vials within an hour may result in excessive buoyancy.*
+                    </p>
+                </div>
+            </div>
+
+            <!-- Panel 2: Rare Ingredients -->
+            <div id="panel-ingredients" class="tab-panel hidden">
+                <h2 class="text-3xl font-semibold mb-4 text-red-400">Harvests from Beyond the Veil</h2>
+                <ul class="list-disc ml-6 space-y-2">
+                    <li>**Glimmering Fungus:** Found deep in the Fading Caves. Used primarily as a binding agent.</li>
+                    <li>**Wyvern Scale Dust:** Harvested only after a successful molt. Highly prized for protective wards.</li>
+                    <li>**Heart of the Mountain:** A crystalized fragment of pure elemental earth. Extremely stable, invaluable for permanent enchantments.</li>
+                </ul>
+            </div>
+
+            <!-- Panel 3: Ancient Incantations -->
+            <div id="panel-spells" class="tab-panel hidden">
+                <h2 class="text-3xl font-semibold mb-4 text-blue-400">Words of Forgotten Power</h2>
+                <div class="space-y-4">
+                    <p class="font-mono bg-gray-800 p-3 rounded-md text-sm text-yellow-300">
+                        <span class="text-xl">"IGNIS AETERNA"</span><br>
+                        A simple, yet potent flame-starting spell. Useful for campfires, less so for vanquishing demons.
+                    </p>
+                    <p class="font-mono bg-gray-800 p-3 rounded-md text-sm text-yellow-300">
+                        <span class="text-xl">"TEMPORIS VESTIGIUM"</span><br>
+                        An advanced chronomancy spell used to reveal the recent movements of a target. Highly taxing on the caster.
+                    </p>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <script>
+        // Set the application ID for Firestore (though we aren't using Firestore here, it's a good habit)
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+        // --- GLOBAL SCOPE DEMONSTRATION (Part 2) ---
+        // This is accessible anywhere in the script.
+        const MAX_POTENCY_FACTOR = 1.5; 
+
+        // 1. Get references to all interactive elements
+        const tabs = document.querySelectorAll('.tab-button');
+        const panels = document.querySelectorAll('.tab-panel');
+        const doseResultEl = document.getElementById('dose-result');
+        const calculateBtn = document.getElementById('calculate-dose-btn');
+        const alertEl = document.getElementById('alchemy-alert');
+
+        // Define the active class styles to be toggled
+        const activeTabClasses = ['bg-purple-700', 'text-white'];
+        const inactiveTabClasses = ['text-purple-400', 'border', 'border-purple-700/50'];
+
+        // --- Part 2: Custom Function with Parameters and Return Value ---
+
+        /**
+         * Calculates the safe maximum dosage based on base amount and a multiplier.
+         * Demonstrates parameter usage and return values.
+         * @param {number} baseDosage - The standard dosage in milliliters.
+         * @param {number} multiplier - The potency factor for the current brew.
+         * @returns {number} The calculated maximum safe dose.
+         */
+        function calculateDose(baseDosage, multiplier) {
+            // Local Scope: standardBuffer is only accessible inside this function.
+            const standardBuffer = 0.9; 
+            
+            // Using the global variable MAX_POTENCY_FACTOR
+            let adjustedMultiplier = multiplier > MAX_POTENCY_FACTOR ? MAX_POTENCY_FACTOR : multiplier;
+
+            // Return the calculated value
+            return Math.round((baseDosage * adjustedMultiplier) * standardBuffer);
+        }
+
+        // --- Part 3: JavaScript Function to Trigger CSS Animation ---
+
+        /**
+         * Triggers the CSS keyframe animation for the alert element.
+         * Uses DOM manipulation to add/remove the CSS class.
+         * @param {string} message - The message to display in the alert.
+         */
+        function triggerAlchemyAlert(message) {
+            // Set the alert message
+            alertEl.textContent = message;
+            
+            // Step 1: Add the class to start the CSS animation (Part 3)
+            alertEl.classList.add('animate-alert');
+            alertEl.classList.remove('opacity-0'); // Ensure it's ready to animate
+            
+            // Step 2: Use event listener to clean up after the animation finishes
+            // This makes the function reusable and self-cleaning.
+            alertEl.addEventListener('animationend', function handler() {
+                // Remove the class to allow it to be triggered again
+                alertEl.classList.remove('animate-alert');
+                alertEl.classList.add('opacity-0'); // Hide it again
+                
+                // Crucially, remove the event listener itself to prevent memory leaks/multiple triggers
+                alertEl.removeEventListener('animationend', handler);
+            });
+        }
+
+        // --- Main Tab Switching Logic (Updated) ---
+
+        /**
+         * Event handler function to switch between tabs.
+         * @param {Event} event - The click event object.
+         */
+        function switchTab(event) {
+            const clickedTab = event.currentTarget;
+            const targetId = clickedTab.dataset.target;
+
+            // --- Step 1: Deactivate ALL tabs and panels ---
+            tabs.forEach(t => {
+                t.classList.remove(...activeTabClasses);
+                t.classList.add(...inactiveTabClasses);
+            });
+
+            panels.forEach(p => {
+                p.classList.add('hidden');
+            });
+
+            // --- Step 2: Activate the clicked tab and its corresponding panel ---
+            clickedTab.classList.remove(...inactiveTabClasses);
+            clickedTab.classList.add(...activeTabClasses);
+
+            const targetPanel = document.getElementById(targetId);
+            if (targetPanel) {
+                targetPanel.classList.remove('hidden');
+            }
+
+            // Trigger the animation when a specific tab is clicked (Part 3)
+            if (targetId === 'panel-potions') {
+                triggerAlchemyAlert("A fresh batch of Potions is now ready!");
+            }
+        }
+
+        // 2. Attach the click event listener to each tab button
+        tabs.forEach(tab => {
+            tab.addEventListener('click', switchTab);
+        });
+
+        // 3. Attach listener for the Dose Calculation button (Part 2)
+        calculateBtn.addEventListener('click', () => {
+            // Example data for the Greater Restoration Vial
+            const base = 50; 
+            const potency = 1.8; 
+
+            // Call the function and store the returned value
+            const safeDose = calculateDose(base, potency);
+
+            // Update the DOM with the result
+            doseResultEl.textContent = `${safeDose} units (ml)`;
+        });
+
+        // This functionality ensures the first tab is correctly styled and visible on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const initialTab = document.getElementById('tab-potions');
+            if (initialTab) {
+                initialTab.classList.remove(...inactiveTabClasses);
+                initialTab.classList.add(...activeTabClasses);
+            }
+        });
+
+    </script>
+</body>
+</html>
